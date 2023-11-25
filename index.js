@@ -28,6 +28,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const userCollection = client.db('bloodDonation').collection("users")
+    const blogsCollection = client.db('bloodDonation').collection("blogs")
     const donationRequestsCollection = client.db('bloodDonation').collection("donationRequests")
 
 
@@ -56,6 +57,17 @@ async function run() {
       const result = await donationRequestsCollection.insertOne(donationRequests)
       res.send(result);
     })
+
+
+    //Blog api
+    app.post('/blogs', async(req, res) =>{
+      const blog = req.body;
+      const result = await blogsCollection.insertOne(blog);
+      res.send(result);
+    })
+
+
+
 
 
     // Send a ping to confirm a successful connection
