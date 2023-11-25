@@ -28,6 +28,11 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const userCollection = client.db('bloodDonation').collection("users")
+    const donationRequestsCollection = client.db('bloodDonation').collection("donationRequests")
+
+
+
+
     // jwt api
     app.post('/jwt', async(req, res)=>{
         const user = req.body;
@@ -42,6 +47,14 @@ async function run() {
         const user = req.body;
         const result = await userCollection.insertOne(user);
         res.send(result);
+    })
+
+
+    // Donation Request
+    app.post('/donation-requests', async ( req, res)=>{
+      const donationRequests = req.body;
+      const result = await donationRequestsCollection.insertOne(donationRequests)
+      res.send(result);
     })
 
 
