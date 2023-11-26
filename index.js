@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const app = express();
@@ -35,55 +35,74 @@ async function run() {
 
 
     // jwt api
-    app.post('/jwt', async(req, res)=>{
-        const user = req.body;
-        const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-            expiresIn: '1h'})
-            res.send({token});
+    app.post('/jwt', async (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: '1h'
+      })
+      res.send({ token });
     })
 
 
     // user api
-    app.post('/users', async(req, res)=>{
-        const user = req.body;
-        const result = await userCollection.insertOne(user);
-        res.send(result);
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+      res.send(result);
     })
 
 
     // Donation Request
-    app.post('/donation-requests', async ( req, res)=>{
+    app.post('/donation-requests', async (req, res) => {
       const donationRequests = req.body;
       const result = await donationRequestsCollection.insertOne(donationRequests)
       res.send(result);
     })
 
-    app.get('/donation-requests', async (req, res) =>{
+    app.get('/donation-requests', async (req, res) => {
       const cursor = donationRequestsCollection.find()
       const result = await cursor.toArray();
       res.send(result)
     })
-    app.get('/donation-requests/:status', async (req, res) =>{
-      const status = req.params.status;
-  
 
-      if(status === 'All Request'){
+    app.get('/donation-requests/:status', async (req, res) => {
+      const status = req.params.status;
+      console.log(status);
+      if (status === 'All Request') {
         const cursor = donationRequestsCollection.find()
-      const result = await cursor.toArray();
-      res.send(result)
+        const result = await cursor.toArray();
+        res.send(result)
       }
-      else{
-        const query = {status: status}
+      else {
+        const query = { status: status }
         const result = await donationRequestsCollection.find(query).toArray()
         res.send(result)
       }
-      
-      
+    })
+
+    // update
+
+    app.get('/update-request/:id', async (req, res) => {
+      const id = req.params.id
+      console.log(id);
+      const query = { _id: new ObjectId(id) }
+      const result = await donationRequestsCollection.find(query).toArray()
+      res.send(result);
     })
 
 
+    app.delete('/donation-requests/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await donationRequestsCollection.deleteOne(query);
+      res.send(result);
+    })
+
+
+
+
     //Blog api
-    app.post('/blogs', async(req, res) =>{
+    app.post('/blogs', async (req, res) => {
       const blog = req.body;
       const result = await blogsCollection.insertOne(blog);
       res.send(result);
@@ -106,10 +125,10 @@ run().catch(console.dir);
 
 
 
-app.get('/', (req, res)=> {
-    res.send('Blood Donation Server')
+app.get('/', (req, res) => {
+  res.send('Blood Donation Server')
 })
 
-app.listen(port, ()=> {
-    console.log(`Blood Donation Server is running on port ${port}`);
+app.listen(port, () => {
+  console.log(`Blood Donation Server is running on port ${port}`);
 })
