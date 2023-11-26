@@ -58,6 +58,29 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/donation-requests', async (req, res) =>{
+      const cursor = donationRequestsCollection.find()
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+    app.get('/donation-requests/:status', async (req, res) =>{
+      const status = req.params.status;
+  
+
+      if(status === 'All Request'){
+        const cursor = donationRequestsCollection.find()
+      const result = await cursor.toArray();
+      res.send(result)
+      }
+      else{
+        const query = {status: status}
+        const result = await donationRequestsCollection.find(query).toArray()
+        res.send(result)
+      }
+      
+      
+    })
+
 
     //Blog api
     app.post('/blogs', async(req, res) =>{
