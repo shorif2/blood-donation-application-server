@@ -153,6 +153,21 @@ async function run() {
       res.send(result);
     })
 
+    app.put('/blogs/:id', async (req, res)=>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const option = {upsert: true};
+      const update = req.body;
+      console.log(update);
+      const updateInfo = {
+        $set:{
+        status: update.status,
+        }
+      }
+      const result = await blogsCollection.updateOne(filter, updateInfo, option)
+      res.send(result)
+    })
+
 
 
 
