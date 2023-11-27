@@ -57,6 +57,36 @@ async function run() {
       res.send(result);
     })
 
+    app.put('/users/:id', async (req, res)=>{
+      const id = req.params.id
+      const filter = {_id: new ObjectId(id)}
+      const options = {upsert: true}
+      const updatedRole = req.body;
+
+      const newRole = {
+        $set:{
+          role: updatedRole.role
+        }
+      }
+      const result = await userCollection.updateOne(filter, newRole, options)
+      res.send(result);
+    })
+
+    app.put('/users-status/:id', async (req, res)=>{
+      const id = req.params.id
+      const filter = {_id: new ObjectId(id)}
+      const options = {upsert: true}
+      const updatedStatus = req.body;
+
+      const newStatus = {
+        $set:{
+          status: updatedStatus.status
+        }
+      }
+      const result = await userCollection.updateOne(filter, newStatus, options)
+      res.send(result);
+    })
+
 
 
 
