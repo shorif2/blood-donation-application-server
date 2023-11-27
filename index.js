@@ -67,7 +67,8 @@ async function run() {
 
     app.get('/donation-requests/:status', async (req, res) => {
       const status = req.params.status;
-      console.log(status);
+
+     
       if (status === 'All Request') {
         const cursor = donationRequestsCollection.find()
         const result = await cursor.toArray();
@@ -80,16 +81,47 @@ async function run() {
       }
     })
 
+    // user donation-requests
+     app.get('/user-donation-request/:email', async (req, res) =>{
+      const email = req.params.email
+      console.log(email);
+      console.log(req.params);
+      const query = { requesterEmail: email }
+      const cursor = donationRequestsCollection.find(query)
+      const result = await cursor.toArray()
+      res.send(result);
+     })
+
     // update
 
     app.get('/update-request/:id', async (req, res) => {
       const id = req.params.id
-      console.log(id);
       const query = { _id: new ObjectId(id) }
       const result = await donationRequestsCollection.find(query).toArray()
       res.send(result);
     })
-
+    app.put('/donation-requests/:id', async (req, res)=>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const option = {upsert: true};
+      const updateDonationRequest = req.body;
+      const updateInfo = {
+        $set:{
+        requesterName: updateDonationRequest.requesterName,
+        requesterEmail: updateDonationRequest.requesterEmail,
+        recipientName: updateDonationRequest.recipientName,
+        hospitalName: updateDonationRequest.hospitalName,
+        recipientDistrict: updateDonationRequest.recipientDistrict,
+        recipientUpazila: updateDonationRequest.recipientUpazila,
+        fullAddress: updateDonationRequest.fullAddress,
+        donationDate: updateDonationRequest.donationDate,
+        donationTime: updateDonationRequest.donationTime,
+        message: updateDonationRequest.message,
+        }
+      }
+      const result = await donationRequestsCollection.updateOne(filter, updateInfo, option)
+      res.send(result)
+    })
 
     app.delete('/donation-requests/:id', async (req, res) => {
       const id = req.params.id;
@@ -107,7 +139,11 @@ async function run() {
       const result = await blogsCollection.insertOne(blog);
       res.send(result);
     })
-
+    app.get('/blogs', async (req, res) => {
+      const cursor = blogsCollection.find()
+      const result = await cursor.toArray();
+      res.send(result)
+    })
 
 
 
