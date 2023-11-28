@@ -57,6 +57,13 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/myInfo/:email', async (req, res)=>{
+      const email = req.params.email;
+      const query = { email: email }
+        const result = await userCollection.find(query).toArray()
+        res.send(result)
+    })
+
     app.put('/users/:id', async (req, res)=>{
       const id = req.params.id
       const filter = {_id: new ObjectId(id)}
@@ -81,6 +88,26 @@ async function run() {
       const newStatus = {
         $set:{
           status: updatedStatus.status
+        }
+      }
+      const result = await userCollection.updateOne(filter, newStatus, options)
+      res.send(result);
+    })
+
+
+    app.put('/update-usersInfo/:id', async (req, res)=>{
+      const id = req.params.id
+      const filter = {_id: new ObjectId(id)}
+      const options = {upsert: true}
+      const userInfo = req.body;
+
+      const newStatus = {
+        $set:{
+          name: userInfo.name,
+          avatar: userInfo.avatar,
+          district: userInfo.district,
+          bloodGroup: userInfo.bloodGroup,
+          upazila: userInfo.upazila
         }
       }
       const result = await userCollection.updateOne(filter, newStatus, options)
