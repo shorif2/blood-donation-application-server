@@ -103,6 +103,8 @@ async function run() {
       res.send(result)
     })
 
+
+
     app.get('/donation-requests/:status', async (req, res) => {
       const status = req.params.status;
 
@@ -119,10 +121,18 @@ async function run() {
       }
     })
 
+
+    app.get('/pending-requests/:pending', async (req, res) => {
+      const pending = req.params.pending;
+        const query = { status: pending }
+        const result = await donationRequestsCollection.find(query).toArray()
+        res.send(result)
+      
+    })
+
     // user donation-requests
      app.get('/user-donation-request/:email', async (req, res) =>{
       const email = req.params.email
-      console.log(email);
       console.log(req.params);
       const query = { requesterEmail: email }
       const cursor = donationRequestsCollection.find(query)
@@ -161,6 +171,22 @@ async function run() {
       res.send(result)
     })
 
+
+    app.put('/donation-info/:id', async (req, res)=>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const option = {upsert: true};
+      const updateDonarInfo = req.body;
+      const updateInfo = {
+        $set:{
+        status: updateDonarInfo.status,
+        donarInfo: updateDonarInfo.info,
+        }
+      }
+      const result = await donationRequestsCollection.updateOne(filter, updateInfo, option)
+      res.send(result)
+    })
+
     app.delete('/donation-requests/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
@@ -181,6 +207,22 @@ async function run() {
       const cursor = blogsCollection.find()
       const result = await cursor.toArray();
       res.send(result)
+    })
+
+    app.get('/blogs-published/:status', async (req, res) => {
+
+      const status = req.params.status
+      const query = { status: status }
+      const result = await blogsCollection.find(query).toArray()
+      res.send(result);
+    })
+
+    app.get('/blogs/:id', async (req, res) => {
+
+      const id = req.params.id
+      const query = { _id: new ObjectId(id)}
+      const result = await blogsCollection.findOne(query)
+      res.send(result);
     })
 
     app.delete('/blogs/:id', async (req, res) => {
