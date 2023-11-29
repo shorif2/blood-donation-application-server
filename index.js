@@ -107,14 +107,24 @@ async function run() {
       }
 
       res.send({admin});
-
     })
+
+
 
 
 
     app.get('/myInfo/:email', async (req, res)=>{
       const email = req.params.email;
       const query = { email: email }
+        const result = await userCollection.find(query).toArray()
+        res.send(result)
+    })
+
+    app.get('/donar', async (req, res)=>{
+      const bloodGroup = req.query.bloodGroup;
+      const district = req.query.district;
+      const upazila = req.query.upazila;
+      const query = { bloodGroup: bloodGroup , district: district , upazila: upazila  }
         const result = await userCollection.find(query).toArray()
         res.send(result)
     })
@@ -327,7 +337,6 @@ async function run() {
       res.send(result)
     })
 
-    // image upload
 
 
     // Send a ping to confirm a successful connection
