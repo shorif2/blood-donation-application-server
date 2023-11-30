@@ -37,7 +37,6 @@ async function run() {
     app.post('/create-payment-intent', async (req, res)=>{
       const {price} = req.body;
       const amount = parseInt(price * 100);
-      console.log(amount, 'amount inside the');
       const paymentIntent = await stripe.paymentIntents.create({
         amount : amount,
         currency: 'usd',
@@ -52,6 +51,11 @@ async function run() {
     app.post('/money-donar-list', async (req, res) =>{
       const moneyDonarList = req.body
       const result = await moneyDonarCollection.insertOne(moneyDonarList)
+      res.send(result)
+    })
+    app.get('/money-donar-list', async (req, res) =>{
+      const cursor = moneyDonarCollection.find()
+      const result = await cursor.toArray();
       res.send(result)
     })
 
@@ -101,12 +105,28 @@ async function run() {
       const email = req.params.email
       const query = {email: email}
       const users = await userCollection.findOne(query)
+
+      console.log(users);
       let admin = false;
       if (users){
         admin = users.role === 'Admin'
       }
 
       res.send({admin});
+    })
+
+    app.get('/user/volunteer/:email',  async (req, res) =>{
+
+      const email = req.params.email
+      const query = {email: email}
+      const users = await userCollection.findOne(query)
+      let volunteer = false;
+      if (users){
+        volunteer = users.role === 'Volunteer'
+      }
+
+      
+      res.send({users});
     })
 
 
